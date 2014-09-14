@@ -191,6 +191,8 @@ class My_Custom_Job_Manager_Content {
 		$term   = get_term_by( 'slug', $property, 'job_listing_property_type' );
 
 		wp_set_post_terms( $job_id, array( $term->term_id ), 'job_listing_property_type', false );
+		
+	}
 
 
 	/**
