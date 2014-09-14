@@ -71,7 +71,6 @@ class My_Custom_Job_Manager_Content {
 		add_action( 'init', array( $this, 'register_post_taxonomy' ) );
 		add_filter( 'submit_job_form_fields', array( $this, 'form_fields' ) );
 		add_action( 'job_manager_update_job_data', array( $this, 'update_job_data' ), 10, 2 );
-		add_action( 'job_manager_update_job_data', array( $this, 'frontend_add_property_fields') );
 		add_filter( 'submit_job_form_fields_get_job_data', array( $this, 'form_fields_get_job_data' ), 10, 2 );
 		add_filter( 'job_manager_job_listing_data_fields', array( $this, 'job_listing_data_fields' ) );
 		add_action( 'single_job_listing_meta_end', array( $this, 'display_custom_property_type' ) );
@@ -182,6 +181,8 @@ class My_Custom_Job_Manager_Content {
 	 * @since 1.0
 	 */
 	function update_job_data( $job_id, $values ) {
+		update_post_meta( $job_id, '_property_name', $values['property']['property_name'] );
+		update_post_meta( $job_id, '_property_size', $values['property']['property_size'] );
 		$property = isset ( $values[ 'property' ][ 'property_type' ] ) ? $values[ 'property' ][ 'property_type' ] : null;
 
 		if ( ! $property )
@@ -191,12 +192,6 @@ class My_Custom_Job_Manager_Content {
 
 		wp_set_post_terms( $job_id, array( $term->term_id ), 'job_listing_property_type', false );
 
-	}
-
-	function frontend_add_property_fields( $job_id, $values ) {
-		update_post_meta( $job_id, '_property_name', $values['property']['property_name'] );
-		update_post_meta( $job_id, '_property_size', $values['property']['property_size'] );	
-	}
 
 	/**
 	 * On a singular job page, display the property type.
@@ -218,9 +213,8 @@ class My_Custom_Job_Manager_Content {
 		$property = $terms[0];
 		$propertyname  = $property->name;
 
-		if ( $property ){
+		if ( $property )
 			echo '<li>' . __( 'Property Type:' ) . ' ' . $propertyname . '</li>';
-		}
 	}
 
 	function add_property_fileds_to_submit( $fields ) {
